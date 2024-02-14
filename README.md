@@ -2,11 +2,15 @@
 # Using JedisManager.cfc
 
 ## Overview
-This Markdown file provides instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
+Instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
 
 ---
 
-## Step 1: Initialize JedisManager.cfc
+## Step 1: Set Jedis Configuration Values
+
+Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server.
+
+## Step 2: Initialize JedisManager.cfc
 
 1. Create an instance of `JedisManager.cfc`.
 2. Call the `init()` function to load settings.
@@ -18,10 +22,6 @@ jedisManager = new JedisManager();
 // Initialize Jedis settings
 jedisManager.init();
 ```
-
-## Step 2: Set Jedis Configuration Values
-
-Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server.
 
 ## Step 3: Using Cache Methods
 
