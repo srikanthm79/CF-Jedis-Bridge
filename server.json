@@ -1,0 +1,15 @@
+{
+    "name":"CF-Jedis-Bridge",
+    "version":"1.0.0",
+    "app":{
+        "cfengine":"adobe@2021"
+    },
+    "web":{
+        "http":{
+            "port":"8200"
+        },
+        "rewrites":{
+            "enabled":"false"
+        }
+    }
+}

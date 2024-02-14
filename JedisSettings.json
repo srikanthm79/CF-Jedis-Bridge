@@ -1,0 +1,7 @@
+{
+    "jedisServerName"  : "localhost",
+    "jedisServerPort"  : 6379,
+    "jedisMaxTotalpool": 100,
+    "jedisMaxIdlePool" : 10,
+    "defaultCacheDurationInSeconds" : 20
+}
