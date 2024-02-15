@@ -1,10 +1,13 @@
 # CF-Jedis-Bridge
-# Using JedisManager.cfc
 
 ## Overview
-Instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
+A simple and straight-forward library to setup and manage Redis connections in Adobe ColdFusion, exposing the built-in Jedis library. 
 
----
+This document provides instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
+
+## Step 0: Install
+
+If you're developing on this library, run `box install` to install the local development dependencies to run tests and build documentation (coming soon)
 
 ## Step 1: Set Jedis Configuration Values
 
@@ -12,18 +15,22 @@ Ensure that the necessary Jedis configuration values are set in `JedisSettings.j
 
 ## Step 2: Initialize JedisManager.cfc
 
-1. Create an instance of `JedisManager.cfc`.
-2. Call the `init()` function to load settings.
+Create an instance of `JedisManager.cfc` and initialise
 
 ```cfml
 // Instantiate JedisManager.cfc
 jedisManager = new JedisManager();
+```
 
-// Initialize Jedis settings
+or
+
+```cfml
+// Create and initialise JedisManager.cfc
+jedisManager = createObject("component","JedisManager");
 jedisManager.init();
 ```
 
-## Step 3: Using Cache Methods
+## Step 3: Use Cache Methods
 
 ### cacheGet
 Use the `cacheGet` method to retrieve the cached value for the given cache key.
@@ -49,12 +56,8 @@ Use the `cacheInsert` method to insert a value with the given key for a specifie
 jedisManager.cacheInsert(cacheKey, cacheValue, durationInSeconds);
 ```
 
----
-
 ## Sample Implementation
 
 Refer to `test.cfm` for a sample implementation demonstrating the usage of `JedisManager.cfc` and its caching methods.
-
----
 
 Follow these steps to effectively utilize `JedisManager.cfc` for caching purposes in your ColdFusion application.
