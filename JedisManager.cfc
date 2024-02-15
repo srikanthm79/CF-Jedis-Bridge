@@ -38,7 +38,7 @@ component {
     /**
      * Retrieves a Jedis resource from the Jedis pool.
     */
-    function getJedisResource() {
+    private function getJedisResource() {
         return application.jedisPool.getResource();
     }
     
@@ -46,7 +46,7 @@ component {
      * Returns a borrowed Jedis resource back to the Jedis pool.
      * jedis : The Jedis resource to return to the pool.
     */
-    function returnJedisResource(
+    private function returnJedisResource(
         required any jedis
     ) {
         arguments.jedis.close();
@@ -58,7 +58,7 @@ component {
      * dataToCache : The value to cache.
      * cacheDurationInSeconds : The duration for which the value should be cached, in seconds.
     */
-    void function cacheInsert(
+    public void function cacheInsert(
         required string cacheKey,
         required any dataToCache,
                  numeric cacheDurationInSeconds = variables.cacheDurationInSeconds
@@ -83,7 +83,7 @@ component {
      * cacheKey : The key for which to retrieve the cached value.
      * Returns the cached value associated with the cache key, or null if the key is not found.
     */
-    any function cacheGet(
+    public any function cacheGet(
         required string cacheKey
     )
     {
@@ -105,7 +105,7 @@ component {
      * cacheKey : The key to check for existence in the cache.
      * Returns true if a value exists for the cache key, false otherwise.
     */
-    boolean function cacheExists(
+    public boolean function cacheExists(
         required string cacheKey
     )
     {
