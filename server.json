@@ -11,5 +11,8 @@
         "rewrites":{
             "enabled":"false"
         }
+    },
+    "scripts":{
+        "onServerStart":"cfpm install caching"
     }
 }
