@@ -39,7 +39,15 @@ component {
      * Retrieves a Jedis resource from the Jedis pool.
     */
     private function getJedisResource() {
-        return application.jedisPool.getResource();
+        try {
+            return application.jedisPool.getResource();
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.getJedisResource.error",
+                message= "JedisManager error, retrieving a Jedis resource from the Jedis pool: "&e.message,
+                detail = e.detail
+            );
+        }
     }
     
     /**
@@ -70,8 +78,14 @@ component {
             // Use the Jedis resource
             jedis.setex(arguments.cacheKey, arguments.cacheDurationInSeconds, arguments.dataToCache);
         
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager insert cache error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheInsert.error",
+                message= "JedisManager insert cache error: "&e.message,
+                detail = e.detail
+            );
         } finally {
             // Return the Jedis resource to the pool
             returnJedisResource(jedis);
@@ -92,8 +106,14 @@ component {
             var jedis = getJedisResource();
             // Retrieve data from the cache
             return jedis.get(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager get cache error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheGet.error",
+                message= "JedisManager get cache error: "&e.message,
+                detail = e.detail
+            );
         } finally {
             // Return the Jedis resource to the pool
             returnJedisResource(jedis);
@@ -115,8 +135,13 @@ component {
 
             // Check key exists in the cache
             return jedis.exists(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager check cache exists error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheExists.error",
+                message= "JedisManager check cache exists error: "&e.message,
+                detail = e.detail);
         } finally {
             // Return the Jedis resource to the pool
             returnJedisResource(jedis);
