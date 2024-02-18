@@ -88,7 +88,9 @@ component {
             );
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isDefined("jedis")){
+                returnJedisResource(jedis);
+            }
         }
     }
 
@@ -116,7 +118,9 @@ component {
             );
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isDefined("jedis")){
+                returnJedisResource(jedis);
+            }
         }
     }
 
@@ -144,7 +148,10 @@ component {
                 detail = e.detail);
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isDefined("jedis")){
+                returnJedisResource(jedis);
+            }
+            
         }
     }
 
