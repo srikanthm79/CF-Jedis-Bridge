@@ -123,28 +123,6 @@ component {
         }
     }
 
-    /**
-     * Delete the given key and associated value from cache.
-     * cacheKey : The key to remove from the cache.
-    */
-    public function cacheClear(
-        required string cacheKey
-    )
-    {
-        try {
-            // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
-
-            // Delete the key from cache
-            jedis.del(arguments.cacheKey);
-        } catch (Exception e) {
-            throw(message="JedisManager clear cache error: "&e.message, detail=e.detail);
-        } finally {
-            // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
-        }
-    }
-
     private void function loadSettings() {
         try {
             // Deserialize settings json
