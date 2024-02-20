@@ -72,9 +72,10 @@ component {
                  numeric cacheDurationInSeconds = variables.cacheDurationInSeconds
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
             // Use the Jedis resource
             jedis.setex(arguments.cacheKey, arguments.cacheDurationInSeconds, arguments.dataToCache);
         
@@ -88,7 +89,7 @@ component {
             );
         } finally {
             // Return the Jedis resource to the pool
-            if(!isNull(jedis)){
+            if(isObject(jedis)){
                 returnJedisResource(jedis);
             }
         }
@@ -103,9 +104,10 @@ component {
         required string cacheKey
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
             // Retrieve data from the cache
             return jedis.get(arguments.cacheKey);
         } catch ( "JedisManager.retriveJedis.resource.error" e ) {
@@ -118,7 +120,7 @@ component {
             );
         } finally {
             // Return the Jedis resource to the pool
-            if(!isNull(jedis)){
+            if(isObject(jedis)){
                 returnJedisResource(jedis);
             }
         }
@@ -133,9 +135,10 @@ component {
         required string cacheKey
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
 
             // Check key exists in the cache
             return jedis.exists(arguments.cacheKey);
@@ -148,7 +151,7 @@ component {
                 detail = e.detail);
         } finally {
             // Return the Jedis resource to the pool
-            if(!isNull(jedis)){
+            if(isObject(jedis)){
                 returnJedisResource(jedis);
             }
             
