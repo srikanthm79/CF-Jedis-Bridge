@@ -123,6 +123,37 @@ component {
         }
     }
 
+     /**
+     * Delete the given key and associated value from cache.
+     * We are using DEL instead of UNLINK because UNLINK is not supported with the
+     * Jedis version shipped with CF 2021. Once UNLINK is available, 
+     * consider switching to it, as it removes keys asynchronously in the background,
+     * allowing non-blocking operation.
+     * cacheKey : The key to remove from the cache.
+     * Returns 1 if the key is found and deleted; otherwise, returns 0.
+    */
+    public numeric function cacheClear(
+        required string cacheKey
+    )
+    {
+        var jedis = "";
+        try {
+            // Get a Jedis resource from the pool
+            jedis = getJedisResource();
+
+            // Delete the key from cache
+            return jedis.del(arguments.cacheKey);
+        } catch (Exception e) {
+            throw(message="JedisManager clear cache error: "&e.message, detail=e.detail);
+        } finally {
+            // Return the Jedis resource to the pool
+            if(isObject(jedis))
+            {
+                returnJedisResource(jedis);
+            }
+        }
+    }
+
     private void function loadSettings() {
         try {
             // Deserialize settings json
