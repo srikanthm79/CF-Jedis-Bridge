@@ -39,7 +39,15 @@ component {
      * Retrieves a Jedis resource from the Jedis pool.
     */
     private function getJedisResource() {
-        return application.jedisPool.getResource();
+        try {
+            return application.jedisPool.getResource();
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.getJedisResource.error",
+                message= "JedisManager error, retrieving a Jedis resource from the Jedis pool: "&e.message,
+                detail = e.detail
+            );
+        }
     }
     
     /**
@@ -64,17 +72,26 @@ component {
                  numeric cacheDurationInSeconds = variables.cacheDurationInSeconds
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
             // Use the Jedis resource
             jedis.setex(arguments.cacheKey, arguments.cacheDurationInSeconds, arguments.dataToCache);
         
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager insert cache error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheInsert.error",
+                message= "JedisManager insert cache error: "&e.message,
+                detail = e.detail
+            );
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
         }
     }
 
@@ -87,16 +104,25 @@ component {
         required string cacheKey
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
             // Retrieve data from the cache
             return jedis.get(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager get cache error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheGet.error",
+                message= "JedisManager get cache error: "&e.message,
+                detail = e.detail
+            );
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
         }
     }
 
@@ -109,31 +135,40 @@ component {
         required string cacheKey
     )
     {
+        var jedis = "";
         try {
             // Get a Jedis resource from the pool
-            var jedis = getJedisResource();
+            jedis = getJedisResource();
 
             // Check key exists in the cache
             return jedis.exists(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
         } catch (Exception e) {
-            throw(message="JedisManager check cache exists error: "&e.message, detail=e.detail);
+            throw(
+                type   = "JedisManager.cacheExists.error",
+                message= "JedisManager check cache exists error: "&e.message,
+                detail = e.detail);
         } finally {
             // Return the Jedis resource to the pool
-            returnJedisResource(jedis);
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
+            
         }
     }
 
     private void function loadSettings() {
         try {
             // Deserialize settings json
-            var jedisSsettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
+            var jedisSettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
 
             // Store jedis settings in variables scope
-            variables.jedisServerName        = jedisSsettings.jedisServerName;
-            variables.jedisServerPort        = jedisSsettings.jedisServerPort;
-            variables.jedisMaxTotalpool      = jedisSsettings.jedisMaxTotalpool;
-            variables.jedisMaxIdlePool       = jedisSsettings.jedisMaxIdlePool;
-            variables.cacheDurationInSeconds = jedisSsettings.defaultCacheDurationInSeconds;
+            variables.jedisServerName        = jedisSettings.jedisServerName;
+            variables.jedisServerPort        = jedisSettings.jedisServerPort;
+            variables.jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
+            variables.jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
+            variables.cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
 
         } catch (any e) {
             throw(message="JedisManager load settings error: "&e.message, detail=e.detail);
