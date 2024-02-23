@@ -9,6 +9,8 @@
             <cfset variables.redisObj.cacheinsert(cacheKey="cacheTest:key",dataToCache="This is test string",cacheDurationInSeconds=30)>
         </cfif>
         <p>The cached data is : #redisObj.cacheget(cacheKey='cacheTest:key')#</p>
+        <cfset variables.redisObj.cacheClear(cacheKey="cacheTest:key")>
+        <p>Deleted the key "cacheTest:key" from cache</p>
     </cfoutput>
     <cfcatch type="any">
         <cfoutput>
