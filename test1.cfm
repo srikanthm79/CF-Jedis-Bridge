@@ -1,4 +1,3 @@
-
 <cftry>
     <cfif not structKeyExists(application, "users")>
          <cfset application.users = []>
