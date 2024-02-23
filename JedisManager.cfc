@@ -161,14 +161,14 @@ component {
     private void function loadSettings() {
         try {
             // Deserialize settings json
-            var jedisSsettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
+            var jedisSettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
 
             // Store jedis settings in variables scope
-            variables.jedisServerName        = jedisSsettings.jedisServerName;
-            variables.jedisServerPort        = jedisSsettings.jedisServerPort;
-            variables.jedisMaxTotalpool      = jedisSsettings.jedisMaxTotalpool;
-            variables.jedisMaxIdlePool       = jedisSsettings.jedisMaxIdlePool;
-            variables.cacheDurationInSeconds = jedisSsettings.defaultCacheDurationInSeconds;
+            variables.jedisServerName        = jedisSettings.jedisServerName;
+            variables.jedisServerPort        = jedisSettings.jedisServerPort;
+            variables.jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
+            variables.jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
+            variables.cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
 
         } catch (any e) {
             throw(message="JedisManager load settings error: "&e.message, detail=e.detail);
