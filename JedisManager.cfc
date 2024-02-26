@@ -12,11 +12,15 @@
  * @version 1.0
  */
 component {
-    
+    /**
+     * Initializes the Jedis settings and creates a Redis connection pool.
+     * 
+     * @param reset (boolean, optional) Indicates whether to reset the settings and recreate the connection pool. Defaults to false.
+    */
     function init(
         boolean reset = false
     )
-    {     
+    {   // Check if the jedisPool does not exist in the application scope or if reset is true.
         if( !structKeyExists(application,"jedisPool") || arguments.reset){
             // Load jedis settings
             loadSettings();
@@ -37,6 +41,8 @@ component {
     
     /**
      * Retrieves a Jedis resource from the Jedis pool.
+     * 
+     * @return The Jedis resource from the Jedis pool
     */
     private function getJedisResource() {
         try {
@@ -52,7 +58,8 @@ component {
     
     /**
      * Returns a borrowed Jedis resource back to the Jedis pool.
-     * jedis : The Jedis resource to return to the pool.
+     * 
+     * @param jedis (any) The Jedis resource to return to the pool.
     */
     private function returnJedisResource(
         required any jedis
@@ -62,9 +69,10 @@ component {
 
     /**
      * Caches a value with the given key for a specified duration.
-     * cacheKey : The key to cache the value.
-     * dataToCache : The value to cache.
-     * cacheDurationInSeconds : The duration for which the value should be cached, in seconds.
+     * 
+     * @param cacheKey (string) The key to cache the value.
+     * @param dataToCache (any) The value to cache.
+     * @param cacheDurationInSeconds (numeric, optional) The duration for which the value should be cached, in seconds. Defaults to value set in settings.
     */
     public void function cacheInsert(
         required string cacheKey,
@@ -97,8 +105,10 @@ component {
 
     /**
      * Retrieves the cached value for the given cache key.
-     * cacheKey : The key for which to retrieve the cached value.
-     * Returns the cached value associated with the cache key, or null if the key is not found.
+     * 
+     * @param cacheKey (string) The key for which to retrieve the cached value.
+     * 
+     * @return The cached value associated with the cache key, or null if the key is not found.
     */
     public any function cacheGet(
         required string cacheKey
@@ -128,8 +138,10 @@ component {
 
     /**
      * Checks if a value exists in the cache for the given cache key.
-     * cacheKey : The key to check for existence in the cache.
-     * Returns true if a value exists for the cache key, false otherwise.
+     * 
+     * @param cacheKey (string) The key to check for existence in the cache.
+     * 
+     * @return true if a value exists for the cache key, false otherwise.
     */
     public boolean function cacheExists(
         required string cacheKey
@@ -158,14 +170,16 @@ component {
         }
     }
 
-     /**
+    /**
      * Delete the given key and associated value from cache.
      * We are using DEL instead of UNLINK because UNLINK is not supported with the
      * Jedis version shipped with CF 2021. Once UNLINK is available, 
      * consider switching to it, as it removes keys asynchronously in the background,
      * allowing non-blocking operation.
-     * cacheKey : The key to remove from the cache.
-     * Returns 1 if the key is found and deleted; otherwise, returns 0.
+     * 
+     * @param cacheKey (string) The key to remove from the cache.
+     * 
+     * @return 1 if the key is found and deleted; otherwise, returns 0.
     */
     public numeric function cacheClear(
         required string cacheKey
@@ -189,6 +203,13 @@ component {
         }
     }
 
+    /**
+     * Loads Jedis settings from a JSON file and stores them in the variables scope.
+     * This function reads the 'JedisSettings.json' file located in the same directory.
+     * It deserializes the JSON content and assigns the settings to corresponding variables in the variables scope.
+     * 
+     * @throws Throws an exception if an error occurs while loading or parsing the settings JSON file.
+    */
     private void function loadSettings() {
         try {
             // Deserialize settings json

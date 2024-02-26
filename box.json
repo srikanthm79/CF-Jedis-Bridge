@@ -7,7 +7,7 @@
     "description":"",
     "devDependencies":{
         "testbox":"5",
-        "docbox":"4"
+        "docbox":"^4.2.1+3"
     },
     "documentation":"",
     "homepage":"https://github.com/srikanthm79/CF-Jedis-Bridge",
