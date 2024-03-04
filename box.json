@@ -35,7 +35,9 @@
         "type":"",
         "URL":""
     },
-    "scripts":{},
+    "scripts":{
+        "docs":"docbox generate source='.'  mapping=JedisManager excludes=coldbox|testbox|docbox strategy=HTML strategy-projectTitle='CF-Jedis-Bridge' strategy-outputDir='docs'"
+    },
     "shortDescription":"A simplistic and straightforward, yet flexible, connector between ACF and Redis",
     "slug":"cf-jedis-bridge",
     "testbox":{
