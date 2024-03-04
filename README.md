@@ -63,3 +63,13 @@ Refer to `test.cfm` for a sample implementation demonstrating the usage of `Jedi
 Refer to `test1.cfm` for the user-specific cache key implementation utilizing `jedismanager.cfc` and its caching methods. This file generates 500 users and stores user-related IDs and data, which can serve as keys for the cache functions. Additionally, this file can be utilized for conducting load testing operations.
 
 Follow these steps to effectively utilize `JedisManager.cfc` for caching purposes in your ColdFusion application.
+
+## JedisManager Documentation
+
+To access comprehensive documentation about the `JedisManager` component:
+
+Execute the following command in CommandBox once:
+```cfml
+run-script build-docs
+```
+ Please navigate to `servername:portnumber/docs`. This directory contains detailed information to help you better understand the functionality and usage of `JedisManager`.
