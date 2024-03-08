@@ -3,7 +3,9 @@
     "bugs":"",
     "changelog":"",
     "contributors":[],
-    "dependencies":{},
+    "dependencies":{
+        "cbproxies":"^1.1.0+1"
+    },
     "description":"",
     "devDependencies":{
         "testbox":"5",
@@ -14,7 +16,8 @@
     "ignore":[],
     "installPaths":{
         "testbox":"testbox/",
-        "docbox":"docbox/"
+        "docbox":"docbox/",
+        "cbproxies":"modules/cbproxies/"
     },
     "instructions":"",
     "keywords":"Redis,Jedis,ACF,Cache",
@@ -46,11 +49,7 @@
         "options":{},
         "recurse":true,
         "reporter":"",
-        "runner":[
-            {
-                "default":""
-            }
-        ],
+        "runner":"http://127.0.0.1:8200/tests/runner.cfm?directory=tests.specs.unit&recurse=true&verbose=true",
         "testBundles":"",
         "testSpecs":"",
         "testSuites":"",

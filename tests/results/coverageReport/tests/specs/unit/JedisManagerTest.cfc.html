@@ -1,0 +1,173 @@
+
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<title>tests/specs/unit/JedisManagerTest.cfc</title>
+
+			<link rel="stylesheet" href="../../../assets/css/syntaxhighlighter.css">
+			<link rel="stylesheet" href="../../../assets/css/main.css">
+			<script src="../../../assets/js/jquery-3.3.1.min.js"></script>
+			<script src="../../../assets/js/popper.min.js"></script>
+			<script src="../../../assets/js/bootstrap.min.js"></script>
+			<script src="../../../assets/js/stupidtable.min.js"></script>
+			<script src="../../../assets/js/syntaxhighlighter.js"></script>
+			<script src="../../../assets/js/fontawesome.js"></script>
+			
+			<script>
+				$( document ).ready( function(){
+					var lineNumbersBGColorsJSON = {"88":"success","46":"success","49":"success","91":"success","94":"success","51":"success","97":"success","54":"success","11":"success","99":"success","12":"success","13":"success","57":"success","14":"success","15":"success","16":"success","17":"success","18":"success","1":"danger","8":"success","9":"success","60":"success","62":"success","65":"success","21":"success","22":"success","68":"success","27":"success","28":"success","29":"success","71":"success","73":"success","74":"success","75":"success","32":"success","33":"success","78":"success","36":"success","38":"success","39":"success","102":"success","105":"success","81":"success","40":"success","84":"success","86":"success","43":"success","87":"success"};
+					$.each( lineNumbersBGColorsJSON, function( key, value ) {
+						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
+					});
+				});
+			</script>
+
+		</head>
+		<body>
+			<div class="container-fluid my-3">
+				<table class="table-borderless mx-auto">
+					<thead>
+						<tr>
+							<th class="h2 text-right pr-3">
+								tests/specs/unit/JedisManagerTest.cfc
+							</th>
+							<th style="width: 300px">
+								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
+									<div class="progress-bar bg-success" role="progressbar" style="width: 97.9%" aria-valuenow="97.9" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: 2.1%" aria-valuenow="2.1" aria-valuemin="0" aria-valuemax="100"></div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100">97.9% coverage</span>
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-angle-double-left"></i> Back</button></a>
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<hr width="100%">
+
+<script type="text/syntaxhighlighter" class="brush: javascript"><![CDATA[
+
+component
+    extends="coldbox.system.testing.BaseModelTest"
+{
+
+    /*********************************** LIFE CYCLE Methods ***********************************/
+
+    function beforeAll() {
+        super.beforeAll();
+        // setup
+		model = createMock( "JedisManager");
+		model.$("loadSettings");
+		model.$property( "jedisServerPort", "variables", "6379" );
+		model.$property( "jedisServerName", "variables", "localhost" );
+		model.$property( "jedisMaxTotalpool", "variables", 100 );
+		model.$property( "jedisMaxIdlePool", "variables", 10 );
+		model.$property( "cacheDurationInSeconds", "variables", 20 );
+		model.init();
+    }
+
+    function afterAll() {
+        super.afterAll();
+    }
+
+    /*********************************** BDD SUITES ***********************************/
+
+    function run() {
+        describe( "JedisManager suite", function() {
+            beforeEach( function( currentSpec ) {
+            } );
+
+            it( "Can be created", function() {
+                expect( model ).toBeComponent();
+            } );
+
+			it( "set and get value", function() {
+                // Arrange
+				var key   = "testKey";
+				var value = "testValue";
+				model.cacheInsert(key, value,10);
+
+				// Act
+				var retrievedValue = model.cacheGet(key);
+
+				// Assert
+				assertEquals(value, retrievedValue, "getValue should return the expected value");
+            } );
+
+			it( "cacheGet - should return null for a non-existent key", function() {
+                // Arrange
+				var key = "testKeyNew";
+
+				// Act
+				var nonExistentValue = model.cacheGet(key);
+
+				// Assert
+				expect(isDefined("nonExistentValue")).toBeFalse("The var 'nonExistentValue' should not be defined");
+            } );
+
+			it( "cacheExists - should return false for a non-existent key", function() {
+                // Arrange
+				var key = "testKeyNew";
+
+				// Act
+				var nonExistentKey = model.cacheExists(key);
+
+				// Assert
+				expect(nonExistentKey).toBeFalse();
+            } );
+
+			it( "cacheExists - should return true for existing key", function() {
+                // Arrange
+				var key   = "testKey";
+				var value = "testValue";
+				model.cacheInsert(key, value,10);
+
+				// Act
+				var existsKey = model.cacheExists(key);
+
+				// Assert
+				expect(existsKey).toBeTrue();
+            } );
+
+			it( "cacheClear - should clear existing key and return 1", function() {
+                // Arrange
+				var key   = "testKey";
+				var value = "testValue";
+				model.cacheInsert(key, value,10);
+
+				// Act
+				var clearKey = model.cacheClear(key);
+
+				// Assert
+				expect(clearKey).toBe(1);
+            } );
+
+			it( "cacheClear - should return 0 for a non-existent key", function() {
+                // Arrange
+				var key   = "testKeyNew";
+
+				// Act
+				var clearKey = model.cacheClear(key);
+
+				// Assert
+				expect(clearKey).toBe(0);
+            } );
+
+		} );
+	}
+
+}
+
+]]></script>
+		</div>
+	</body>
+</html>

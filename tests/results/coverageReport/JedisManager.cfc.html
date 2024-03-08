@@ -1,0 +1,271 @@
+
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<title>JedisManager.cfc</title>
+
+			<link rel="stylesheet" href="assets/css/syntaxhighlighter.css">
+			<link rel="stylesheet" href="assets/css/main.css">
+			<script src="assets/js/jquery-3.3.1.min.js"></script>
+			<script src="assets/js/popper.min.js"></script>
+			<script src="assets/js/bootstrap.min.js"></script>
+			<script src="assets/js/stupidtable.min.js"></script>
+			<script src="assets/js/syntaxhighlighter.js"></script>
+			<script src="assets/js/fontawesome.js"></script>
+			
+			<script>
+				$( document ).ready( function(){
+					var lineNumbersBGColorsJSON = {"88":"danger","45":"danger","46":"danger","47":"danger","48":"danger","192":"danger","193":"danger","150":"danger","151":"danger","195":"danger","110":"success","154":"success","198":"danger","155":"success","199":"danger","112":"success","114":"danger","116":"danger","117":"danger","118":"danger","92":"success","119":"danger","93":"success","57":"success","16":"success","17":"success","123":"success","200":"danger","124":"success","201":"danger","202":"danger","205":"danger","60":"success","20":"success","22":"danger","23":"danger","24":"danger","25":"danger","69":"success","27":"danger","28":"danger","29":"danger","170":"success","174":"success","175":"success","177":"success","134":"success","138":"success","139":"success","72":"danger","30":"danger","31":"danger","75":"success","76":"success","78":"success","180":"success","182":"danger","141":"success","185":"success","187":"success","144":"success","146":"danger","103":"success","148":"danger","149":"danger","80":"success","107":"success","108":"success","83":"danger","41":"success","85":"danger","42":"success","86":"danger","43":"success","87":"danger"};
+					$.each( lineNumbersBGColorsJSON, function( key, value ) {
+						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
+					});
+				});
+			</script>
+
+		</head>
+		<body>
+			<div class="container-fluid my-3">
+				<table class="table-borderless mx-auto">
+					<thead>
+						<tr>
+							<th class="h2 text-right pr-3">
+								JedisManager.cfc
+							</th>
+							<th style="width: 300px">
+								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
+									<div class="progress-bar bg-danger" role="progressbar" style="width: 48.0%" aria-valuenow="48.0" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: 52%" aria-valuenow="52" aria-valuemin="0" aria-valuemax="100"></div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100">48.0% coverage</span>
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-angle-double-left"></i> Back</button></a>
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<hr width="100%">
+
+<script type="text/syntaxhighlighter" class="brush: javascript"><![CDATA[
+/**
+ * JedisManager.cfc
+ * 
+ * Author: Srikanth Madishetti
+ * 
+ * JedisManager is a ColdFusion component (CFC) designed to manage caching with Jedis, 
+ * a Java client library for Redis. This component provides methods for initializing 
+ * Jedis settings, setting configuration values, and utilizing caching methods such as
+ * cacheGet, cacheExists, and cacheInsert.
+ * 
+ * @author Srikanth Madishetti
+ * @version 1.0
+ */
+component {
+    
+    function init(
+        boolean reset = false
+    )
+    {     
+        if( !structKeyExists(application,"jedisPool") || arguments.reset){
+            // Load jedis settings
+            loadSettings();
+            var jedisPoolConfig = createObject("java", "redis.clients.jedis.JedisPoolConfig").init();
+            jedisPoolConfig.setMaxTotal(variables.jedisMaxTotalpool);
+            jedisPoolConfig.setMaxIdle(variables.jedisMaxIdlePool);
+            // Store the Redis connection pool within the application scope.
+            lock scope="application" type="exclusive" timeout="5" {
+                application.jedisPool = createObject("java", "redis.clients.jedis.JedisPool").init(
+                    jedisPoolConfig,
+                    variables.jedisServerName,
+                    variables.jedisServerPort
+                );
+            }
+        }
+        
+    }
+    
+    /**
+     * Retrieves a Jedis resource from the Jedis pool.
+    */
+    private function getJedisResource() {
+        try {
+            return application.jedisPool.getResource();
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.getJedisResource.error",
+                message= "JedisManager error, retrieving a Jedis resource from the Jedis pool: "&e.message,
+                detail = e.detail
+            );
+        }
+    }
+    
+    /**
+     * Returns a borrowed Jedis resource back to the Jedis pool.
+     * jedis : The Jedis resource to return to the pool.
+    */
+    private function returnJedisResource(
+        required any jedis
+    ) {
+        arguments.jedis.close();
+    }
+
+    /**
+     * Caches a value with the given key for a specified duration.
+     * cacheKey : The key to cache the value.
+     * dataToCache : The value to cache.
+     * cacheDurationInSeconds : The duration for which the value should be cached, in seconds.
+    */
+    public void function cacheInsert(
+        required string cacheKey,
+        required any dataToCache,
+                 numeric cacheDurationInSeconds = variables.cacheDurationInSeconds
+    )
+    {
+        var jedis = "";
+        try {
+            // Get a Jedis resource from the pool
+            jedis = getJedisResource();
+            // Use the Jedis resource
+            jedis.setex(arguments.cacheKey, arguments.cacheDurationInSeconds, arguments.dataToCache);
+        
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.cacheInsert.error",
+                message= "JedisManager insert cache error: "&e.message,
+                detail = e.detail
+            );
+        } finally {
+            // Return the Jedis resource to the pool
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
+        }
+    }
+
+    /**
+     * Retrieves the cached value for the given cache key.
+     * cacheKey : The key for which to retrieve the cached value.
+     * Returns the cached value associated with the cache key, or null if the key is not found.
+    */
+    public any function cacheGet(
+        required string cacheKey
+    )
+    {
+        var jedis = "";
+        try {
+            // Get a Jedis resource from the pool
+            jedis = getJedisResource();
+            // Retrieve data from the cache
+            return jedis.get(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.cacheGet.error",
+                message= "JedisManager get cache error: "&e.message,
+                detail = e.detail
+            );
+        } finally {
+            // Return the Jedis resource to the pool
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
+        }
+    }
+
+    /**
+     * Checks if a value exists in the cache for the given cache key.
+     * cacheKey : The key to check for existence in the cache.
+     * Returns true if a value exists for the cache key, false otherwise.
+    */
+    public boolean function cacheExists(
+        required string cacheKey
+    )
+    {
+        var jedis = "";
+        try {
+            // Get a Jedis resource from the pool
+            jedis = getJedisResource();
+
+            // Check key exists in the cache
+            return jedis.exists(arguments.cacheKey);
+        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
+        } catch (Exception e) {
+            throw(
+                type   = "JedisManager.cacheExists.error",
+                message= "JedisManager check cache exists error: "&e.message,
+                detail = e.detail);
+        } finally {
+            // Return the Jedis resource to the pool
+            if(isObject(jedis)){
+                returnJedisResource(jedis);
+            }
+            
+        }
+    }
+
+     /**
+     * Delete the given key and associated value from cache.
+     * We are using DEL instead of UNLINK because UNLINK is not supported with the
+     * Jedis version shipped with CF 2021. Once UNLINK is available, 
+     * consider switching to it, as it removes keys asynchronously in the background,
+     * allowing non-blocking operation.
+     * cacheKey : The key to remove from the cache.
+     * Returns 1 if the key is found and deleted; otherwise, returns 0.
+    */
+    public numeric function cacheClear(
+        required string cacheKey
+    )
+    {
+        var jedis = "";
+        try {
+            // Get a Jedis resource from the pool
+            jedis = getJedisResource();
+
+            // Delete the key from cache
+            return jedis.del(arguments.cacheKey);
+        } catch (Exception e) {
+            throw(message="JedisManager clear cache error: "&e.message, detail=e.detail);
+        } finally {
+            // Return the Jedis resource to the pool
+            if(isObject(jedis))
+            {
+                returnJedisResource(jedis);
+            }
+        }
+    }
+
+    private void function loadSettings() {
+        try {
+            // Deserialize settings json
+            var jedisSettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
+
+            // Store jedis settings in variables scope
+            variables.jedisServerName        = jedisSettings.jedisServerName;
+            variables.jedisServerPort        = jedisSettings.jedisServerPort;
+            variables.jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
+            variables.jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
+            variables.cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
+
+        } catch (any e) {
+            throw(message="JedisManager load settings error: "&e.message, detail=e.detail);
+        }
+    }
+    
+    
+}
+]]></script>
+		</div>
+	</body>
+</html>

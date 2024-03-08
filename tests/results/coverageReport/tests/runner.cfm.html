@@ -1,0 +1,90 @@
+
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<title>tests/runner.cfm</title>
+
+			<link rel="stylesheet" href="../assets/css/syntaxhighlighter.css">
+			<link rel="stylesheet" href="../assets/css/main.css">
+			<script src="../assets/js/jquery-3.3.1.min.js"></script>
+			<script src="../assets/js/popper.min.js"></script>
+			<script src="../assets/js/bootstrap.min.js"></script>
+			<script src="../assets/js/stupidtable.min.js"></script>
+			<script src="../assets/js/syntaxhighlighter.js"></script>
+			<script src="../assets/js/fontawesome.js"></script>
+			
+			<script>
+				$( document ).ready( function(){
+					var lineNumbersBGColorsJSON = {"11":"danger","12":"danger","13":"danger","25":"danger","15":"danger","16":"danger","17":"danger","28":"danger","18":"danger","19":"danger","1":"danger","3":"danger","4":"danger","5":"danger","6":"danger","7":"danger","8":"danger","9":"danger","10":"danger"};
+					$.each( lineNumbersBGColorsJSON, function( key, value ) {
+						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
+					});
+				});
+			</script>
+
+		</head>
+		<body>
+			<div class="container-fluid my-3">
+				<table class="table-borderless mx-auto">
+					<thead>
+						<tr>
+							<th class="h2 text-right pr-3">
+								tests/runner.cfm
+							</th>
+							<th style="width: 300px">
+								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
+									<div class="progress-bar bg-danger" role="progressbar" style="width: 0.0%" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100">0.0% coverage</span>
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-angle-double-left"></i> Back</button></a>
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<hr width="100%">
+
+<script type="text/syntaxhighlighter" class="brush: coldfusion"><![CDATA[
+<cfsetting showDebugOutput="false">
+<!--- Executes all tests in the 'specs' folder with simple reporter by default --->
+<cfparam name="url.reporter" 			default="simple">
+<cfparam name="url.directory" 			default="tests.specs">
+<cfparam name="url.recurse" 			default="true" type="boolean">
+<cfparam name="url.bundles" 			default="">
+<cfparam name="url.labels" 				default="">
+<cfparam name="url.excludes" 			default="">
+<cfparam name="url.reportpath" 			default="#expandPath( "/tests/results" )#">
+<cfparam name="url.propertiesFilename" 	default="TEST.properties">
+<cfparam name="url.propertiesSummary" 	default="false" type="boolean">
+<cfparam name="url.editor" 				default="vscode">
+<cfparam name="url.bundlesPattern" 		default="">
+
+<cfparam name="url.coverageEnabled"					default="true" type="boolean">
+<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
+<cfparam name="url.coveragePathToCapture"			default="#expandPath( "/" )#">
+<cfparam name="url.coverageWhitelist"				default="">
+<cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc,test.cfm,test1.cfm">
+
+<!--- FYI the "coverageBrowserOutputDir" folder will be DELETED and RECREATED each time
+	  you generate the report. Don't point this setting to a folder that has other important
+	  files. Pick a blank, essentially "temp" folder somewhere. Brad may or may not have
+	  learned this the hard way. Learn from his mistakes. :) --->
+<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
+
+<!--- Include the TestBox HTML Runner --->
+<cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >
+
+]]></script>
+		</div>
+	</body>
+</html>
