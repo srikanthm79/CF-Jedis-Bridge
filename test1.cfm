@@ -9,15 +9,15 @@
 
     <cfset variables.userSession =  application.users[randRange(1, 500)]>
     <cfoutput>
-        <cfset variables.redisObj = new JedisManager()>
+        <cfset variables.redisObj = new com.madishetti.JedisManager()>
         <cfset variables.redisObj.init(reset=true)>
         
         <!--- Verify whether data exists in the cache for the specified key and set it with a duration of 30 seconds --->
         <cfif not variables.redisObj.cacheExists(cacheKey="cacheTest:#variables.userSession.data#")>
-            <p> Cache does not exist, thus data is being set in the cache for the "cacheTest:#variables.userSession.data#" key</p>
+            <p>Cache does not exist, thus data is being set in the cache for the "cacheTest:#variables.userSession.data#" key</p>
             <cfset variables.redisObj.cacheinsert(cacheKey="cacheTest:#variables.userSession.data#",dataToCache="This is test string",cacheDurationInSeconds=30)>
         </cfif>
-        <p>The cached data is : #redisObj.cacheget(cacheKey='cacheTest:#variables.userSession.data#')#</p>
+        <p>The cached data is: #redisObj.cacheget(cacheKey="cacheTest:#variables.userSession.data#")#</p>
 
          <!--- Delete they key and the data from cache--->
         <cfset variables.redisObj.cacheClear(cacheKey="cacheTest:#variables.userSession.data#")>
@@ -25,7 +25,7 @@
     </cfoutput>
     <cfcatch type="any">
         <cfoutput>
-            <p>We have error in setting or getting the data from the cache : #cfcatch.message#</p>
+            <p>We have an error in setting or getting the data from the cache: #cfcatch.message#</p>
         </cfoutput>
     </cfcatch>
 </cftry>

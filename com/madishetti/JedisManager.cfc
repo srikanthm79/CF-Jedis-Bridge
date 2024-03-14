@@ -4,14 +4,26 @@
  * Jedis settings, setting configuration values, and utilizing caching methods such as
  * cacheGet, cacheExists, and cacheInsert.
  * 
+ * The target platform for this CFC is mainly Adobe ColdFusion, levaring the underlying
+ * Jedis Java library supplied with ACF. However, it should be generally compatible with
+ * Lucee as well provided the Jedis library is available in the classpath.
+ * 
  * @author Srikanth Madishetti
  * @version 1.0
  */
-component {
+
+component accessors="true" {
+
+    property name="jedisServerName" type="string";
+    property name="jedisServerPort" type="numeric"; 
+    property name="jedisMaxTotalpool" type="numeric";
+    property name="jedisMaxIdlePool" type="numeric";
+    property name="cacheDurationInSeconds" type="numeric";
+
     /**
      * Initializes the Jedis settings and creates a Redis connection pool.
      * 
-     * @param reset (boolean, optional) Indicates whether to reset the settings and recreate the connection pool. Defaults to false.
+     * @reset Indicates whether to reset the settings and recreate the connection pool. Defaults to false.
     */
     function init(
         boolean reset = false
@@ -21,14 +33,14 @@ component {
             // Load jedis settings
             loadSettings();
             var jedisPoolConfig = createObject("java", "redis.clients.jedis.JedisPoolConfig").init();
-            jedisPoolConfig.setMaxTotal(variables.jedisMaxTotalpool);
-            jedisPoolConfig.setMaxIdle(variables.jedisMaxIdlePool);
+            jedisPoolConfig.setMaxTotal(getJedisMaxTotalpool());
+            jedisPoolConfig.setMaxIdle(getJedisMaxIdlePool());
             // Store the Redis connection pool within the application scope.
             lock scope="application" type="exclusive" timeout="5" {
                 application.jedisPool = createObject("java", "redis.clients.jedis.JedisPool").init(
                     jedisPoolConfig,
-                    variables.jedisServerName,
-                    variables.jedisServerPort
+                    getJedisServerName(),
+                    getJedisServerPort()
                 );
             }
         }
@@ -38,14 +50,15 @@ component {
     /**
      * Retrieves a Jedis resource from the Jedis pool.
      * 
-     * @return The Jedis resource from the Jedis pool
+     * @return A Jedis resource from the Jedis pool
+     * @throws com.madishetti.JedisManager.getJedisResource.error
     */
     private function getJedisResource() {
         try {
             return application.jedisPool.getResource();
         } catch (Exception e) {
             throw(
-                type   = "JedisManager.getJedisResource.error",
+                type   = "com.madishetti.JedisManager.getJedisResource.error",
                 message= "JedisManager error, retrieving a Jedis resource from the Jedis pool: "&e.message,
                 detail = e.detail
             );
@@ -55,7 +68,7 @@ component {
     /**
      * Returns a borrowed Jedis resource back to the Jedis pool.
      * 
-     * @param jedis (any) The Jedis resource to return to the pool.
+     * @jedis A Jedis resource to return to the pool.
     */
     private function returnJedisResource(
         required any jedis
@@ -66,28 +79,28 @@ component {
     /**
      * Caches a value with the given key for a specified duration.
      * 
-     * @param cacheKey (string) The key to cache the value.
-     * @param dataToCache (any) The value to cache.
-     * @param cacheDurationInSeconds (numeric, optional) The duration for which the value should be cached, in seconds. Defaults to value set in settings.
+     * @cacheKey The key to cache the value (string, required)
+     * @dataToCache The value to cache (any, required)
+     * @cacheDurationInSeconds The duration for which the value should be cached, in seconds. Defaults to value set in settings. (numeric, optional)
+     * 
+     * @throws com.madishetti.JedisManager.cacheInsert.error
     */
     public void function cacheInsert(
         required string cacheKey,
         required any dataToCache,
-                 numeric cacheDurationInSeconds = variables.cacheDurationInSeconds
-    )
-    {
+        numeric cacheDurationInSeconds = getCacheDurationInSeconds()
+    ) {
         var jedis = "";
         try {
             // Get a Jedis resource from the pool
             jedis = getJedisResource();
             // Use the Jedis resource
             jedis.setex(arguments.cacheKey, arguments.cacheDurationInSeconds, arguments.dataToCache);
-        
         } catch ( "JedisManager.retriveJedis.resource.error" e ) {
             rethrow;
         } catch (Exception e) {
             throw(
-                type   = "JedisManager.cacheInsert.error",
+                type   = "com.madishetti.JedisManager.cacheInsert.error",
                 message= "JedisManager insert cache error: "&e.message,
                 detail = e.detail
             );
@@ -102,9 +115,11 @@ component {
     /**
      * Retrieves the cached value for the given cache key.
      * 
-     * @param cacheKey (string) The key for which to retrieve the cached value.
+     * @cacheKey The key for which to retrieve the cached value. (string, required)
      * 
-     * @return The cached value associated with the cache key, or null if the key is not found.
+     * @return The cached value associated with the cache key, or `null` if the key is not found.
+     * @throws com.madishetti.JedisManager.cacheGet.error
+     * @throws com.madishetti.JedisManager.retriveJedis.resource.error
     */
     public any function cacheGet(
         required string cacheKey
@@ -116,11 +131,11 @@ component {
             jedis = getJedisResource();
             // Retrieve data from the cache
             return jedis.get(arguments.cacheKey);
-        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
             rethrow;
         } catch (Exception e) {
             throw(
-                type   = "JedisManager.cacheGet.error",
+                type   = "com.madishetti.JedisManager.cacheGet.error",
                 message= "JedisManager get cache error: "&e.message,
                 detail = e.detail
             );
@@ -135,14 +150,15 @@ component {
     /**
      * Checks if a value exists in the cache for the given cache key.
      * 
-     * @param cacheKey (string) The key to check for existence in the cache.
+     * @cacheKey The key to check for existence in the cache. (string, required)
      * 
-     * @return true if a value exists for the cache key, false otherwise.
+     * @return `true` if a value exists for the cache key, `false` otherwise.
+     * @throws com.madishetti.JedisManager.retriveJedis.resource.error
+     * @throws com.madishetti.JedisManager.cacheExists.error
     */
     public boolean function cacheExists(
         required string cacheKey
-    )
-    {
+    ) {
         var jedis = "";
         try {
             // Get a Jedis resource from the pool
@@ -150,12 +166,12 @@ component {
 
             // Check key exists in the cache
             return jedis.exists(arguments.cacheKey);
-        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
             rethrow;
         } catch (Exception e) {
             throw(
-                type   = "JedisManager.cacheExists.error",
-                message= "JedisManager check cache exists error: "&e.message,
+                type   = "com.madishetti.JedisManager.cacheExists.error",
+                message= "com.madishetti.JedisManager check cache exists error: "&e.message,
                 detail = e.detail);
         } finally {
             // Return the Jedis resource to the pool
@@ -168,19 +184,20 @@ component {
 
     /**
      * Delete the given key and associated value from cache.
+     * 
      * We are using DEL instead of UNLINK because UNLINK is not supported with the
      * Jedis version shipped with CF 2021. Once UNLINK is available, 
      * consider switching to it, as it removes keys asynchronously in the background,
      * allowing non-blocking operation.
      * 
-     * @param cacheKey (string) The key to remove from the cache.
+     * @cacheKey The key to remove from the cache. (string, required)
      * 
-     * @return 1 if the key is found and deleted; otherwise, returns 0.
+     * @return `1` if the key is found and deleted; otherwise, returns `0`.
+     * @throws com.madishetti.JedisManager.cacheClear.error
     */
     public numeric function cacheClear(
         required string cacheKey
-    )
-    {
+    ) {
         var jedis = "";
         try {
             // Get a Jedis resource from the pool
@@ -189,7 +206,10 @@ component {
             // Delete the key from cache
             return jedis.del(arguments.cacheKey);
         } catch (Exception e) {
-            throw(message="JedisManager clear cache error: "&e.message, detail=e.detail);
+            throw(
+                type   = "com.madishetti.JedisManager.cacheClear.error",    
+                message="JedisManager clear cache error: "&e.message, 
+                detail=e.detail);
         } finally {
             // Return the Jedis resource to the pool
             if(isObject(jedis))
@@ -204,7 +224,7 @@ component {
      * This function reads the 'JedisSettings.json' file located in the same directory.
      * It deserializes the JSON content and assigns the settings to corresponding variables in the variables scope.
      * 
-     * @throws Throws an exception if an error occurs while loading or parsing the settings JSON file.
+     * @throws com.madishetti.JedisManager.loadSettings.error
     */
     private void function loadSettings() {
         try {
@@ -212,14 +232,16 @@ component {
             var jedisSettings = deserializeJSON(fileRead(expandpath(".")&'/JedisSettings.json'));
 
             // Store jedis settings in variables scope
-            variables.jedisServerName        = jedisSettings.jedisServerName;
-            variables.jedisServerPort        = jedisSettings.jedisServerPort;
-            variables.jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
-            variables.jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
-            variables.cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
-
+            jedisServerName        = jedisSettings.jedisServerName;
+            jedisServerPort        = jedisSettings.jedisServerPort;
+            jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
+            jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
+            cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
         } catch (any e) {
-            throw(message="JedisManager load settings error: "&e.message, detail=e.detail);
+            throw(
+                type="com.madishetti.JedisManager.loadSettings.error",
+                message="JedisManager load settings error: "& e.message, 
+                detail=e.detail);
         }
     }
     
