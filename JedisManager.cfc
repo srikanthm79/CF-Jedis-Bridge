@@ -1,8 +1,4 @@
 /**
- * JedisManager.cfc
- * 
- * Author: Srikanth Madishetti
- * 
  * JedisManager is a ColdFusion component (CFC) designed to manage caching with Jedis, 
  * a Java client library for Redis. This component provides methods for initializing 
  * Jedis settings, setting configuration values, and utilizing caching methods such as
