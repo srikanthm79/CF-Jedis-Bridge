@@ -5,15 +5,15 @@ A simple and straight-forward library to setup and manage Redis connections in A
 
 This document provides instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
 
-## Step 0: Install
+## Step 1: Install
 
 If you're developing on this library, run `box install` to install the local development dependencies to run tests and build documentation (coming soon)
 
-## Step 1: Set Jedis Configuration Values
+## Step 2: Set Jedis Configuration Values
 
 Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server.
 
-## Step 2: Initialize JedisManager.cfc
+## Step 3: Initialize JedisManager.cfc
 
 Create an instance of `JedisManager.cfc` and initialise
 
@@ -30,7 +30,7 @@ jedisManager = createObject("component","JedisManager");
 jedisManager.init();
 ```
 
-## Step 3: Use Cache Methods
+## Step 4: Use Cache Methods
 
 ### cacheGet
 Use the `cacheGet` method to retrieve the cached value for the given cache key.
@@ -63,3 +63,13 @@ Refer to `test.cfm` for a sample implementation demonstrating the usage of `Jedi
 Refer to `test1.cfm` for the user-specific cache key implementation utilizing `jedismanager.cfc` and its caching methods. This file generates 500 users and stores user-related IDs and data, which can serve as keys for the cache functions. Additionally, this file can be utilized for conducting load testing operations.
 
 Follow these steps to effectively utilize `JedisManager.cfc` for caching purposes in your ColdFusion application.
+
+## JedisManager Documentation
+
+To access comprehensive documentation about the `JedisManager` component:
+
+Execute the following command in CommandBox once:
+```cfml
+run-script build-docs
+```
+ Please navigate to `servername:portnumber/docs`. This directory contains detailed information to help you better understand the functionality and usage of `JedisManager`.
