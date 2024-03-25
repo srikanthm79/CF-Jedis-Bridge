@@ -139,7 +139,7 @@ component accessors="true" {
             jedis = getJedisResource();
             // Retrieve data from the cache
             var cacheData = jedis.get( arguments.cacheKey );
-            // Check if the data is a non-simple value
+            // Check if the cacheData is a json value
             if(isJson(cacheData)){
                 cacheData = deserializeJson(cacheData);
             }
