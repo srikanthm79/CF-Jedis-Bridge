@@ -64,6 +64,12 @@ Refer to `test1.cfm` for the user-specific cache key implementation utilizing `j
 
 Follow these steps to effectively utilize `JedisManager.cfc` for caching purposes in your ColdFusion application.
 
+## Testbox Implementation
+
+Please access the following URL to execute the test cases:
+```cfml
+http://servername:portnumber/tests/runner.cfm?directory=tests.specs.unit&recurse=true&verbose=true
+```
 ## JedisManager Documentation
 
 To access comprehensive documentation about the `JedisManager` component:
