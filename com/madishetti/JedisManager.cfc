@@ -61,7 +61,7 @@ component accessors="true" {
             return application.jedisPool.getResource();
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.getJedisResource.error",
+                type    = "com.madishetti.JedisManager.retriveJedis.resource.error",
                 message = "JedisManager error, retrieving a Jedis resource from the Jedis pool: " & e.message,
                 detail  = e.detail
             );
@@ -85,6 +85,7 @@ component accessors="true" {
      * @cacheDurationInSeconds The duration for which the value should be cached, in seconds. Defaults to value set in settings. (numeric, optional)
      *
      * @throws com.madishetti.JedisManager.cacheInsert.error
+     * @throws com.madishetti.JedisManager.cacheInsert.error.typeMismatchException
      */
     public void function cacheInsert(
         required string cacheKey,
@@ -99,15 +100,26 @@ component accessors="true" {
             var cacheData = arguments.dataToCache;
             // Check if the data to cache is a non-simple value
             if (!isSimpleValue(cacheData)) {
-                cacheData = arguments.dataToCache.toJson();
+                // Check and throw an exception if the data is an object and not a struct, array, or query.
+                // Need isObject check because isStruct will return true for an object
+                if (isObject(cacheData) || !(isStruct(cacheData) || isArray(cacheData) || isQuery(cacheData))) {
+                    throw(
+                        type = "com.madishetti.JedisManager.cacheInsert.error.typeMismatchException",
+                        message = "Invalid data type for caching. Data to cache must be a struct, array, query or simple value."
+                    );
+                }
+                cacheData = serializeJson(cacheData);
             }
+
             // Use the Jedis resource
             jedis.setex(
                 arguments.cacheKey,
                 arguments.cacheDurationInSeconds,
                 cacheData
             );
-        } catch ( "JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
+            rethrow;
+        }  catch ( "com.madishetti.JedisManager.cacheInsert.error.typeMismatchException" e ) {
             rethrow;
         } catch ( Exception e ) {
             throw(
