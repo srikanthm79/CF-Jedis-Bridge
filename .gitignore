@@ -3,3 +3,4 @@ docbox
 coldbox
 modules
 tests/results/
+docs/*

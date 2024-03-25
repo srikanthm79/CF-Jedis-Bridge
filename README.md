@@ -5,15 +5,15 @@ A simple and straight-forward library to setup and manage Redis connections in A
 
 This document provides instructions on using `JedisManager.cfc` to manage caching with Jedis in ColdFusion. Follow the steps below to initialize the Jedis settings, set configuration values, and utilize the caching methods provided.
 
-## Step 0: Install
+## Step 1: Install
 
 If you're developing on this library, run `box install` to install the local development dependencies to run tests and build documentation (coming soon)
 
-## Step 1: Set Jedis Configuration Values
+## Step 2: Set Jedis Configuration Values
 
 Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server.
 
-## Step 2: Initialize JedisManager.cfc
+## Step 3: Initialize JedisManager.cfc
 
 Create an instance of `JedisManager.cfc` and initialise
 
@@ -30,7 +30,7 @@ jedisManager = createObject("component","JedisManager");
 jedisManager.init();
 ```
 
-## Step 3: Use Cache Methods
+## Step 4: Use Cache Methods
 
 ### cacheGet
 Use the `cacheGet` method to retrieve the cached value for the given cache key.
@@ -68,5 +68,14 @@ Follow these steps to effectively utilize `JedisManager.cfc` for caching purpose
 
 Please access the following URL to execute the test cases:
 ```cfml
-http://127.0.0.1:8200/tests/runner.cfm?directory=tests.specs.unit&recurse=true&verbose=true
+http://servername:portnumber/tests/runner.cfm?directory=tests.specs.unit&recurse=true&verbose=true
 ```
+## JedisManager Documentation
+
+To access comprehensive documentation about the `JedisManager` component:
+
+Execute the following command in CommandBox once:
+```cfml
+run-script build-docs
+```
+ Please navigate to `servername:portnumber/docs`. This directory contains detailed information to help you better understand the functionality and usage of `JedisManager`.
