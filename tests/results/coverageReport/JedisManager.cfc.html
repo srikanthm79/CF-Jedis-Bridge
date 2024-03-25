@@ -16,7 +16,7 @@
 			
 			<script>
 				$( document ).ready( function(){
-					var lineNumbersBGColorsJSON = {"88":"danger","45":"danger","46":"danger","47":"danger","48":"danger","192":"danger","193":"danger","150":"danger","151":"danger","195":"danger","110":"success","154":"success","198":"danger","155":"success","199":"danger","112":"success","114":"danger","116":"danger","117":"danger","118":"danger","92":"success","119":"danger","93":"success","57":"success","16":"success","17":"success","123":"success","200":"danger","124":"success","201":"danger","202":"danger","205":"danger","60":"success","20":"success","22":"danger","23":"danger","24":"danger","25":"danger","69":"success","27":"danger","28":"danger","29":"danger","170":"success","174":"success","175":"success","177":"success","134":"success","138":"success","139":"success","72":"danger","30":"danger","31":"danger","75":"success","76":"success","78":"success","180":"success","182":"danger","141":"success","185":"success","187":"success","144":"success","146":"danger","103":"success","148":"danger","149":"danger","80":"success","107":"success","108":"success","83":"danger","41":"success","85":"danger","42":"success","86":"danger","43":"success","87":"danger"};
+					var lineNumbersBGColorsJSON = {"88":"danger","45":"danger","46":"danger","47":"danger","48":"danger","192":"danger","193":"danger","150":"danger","151":"danger","195":"danger","110":"danger","154":"danger","198":"danger","155":"danger","199":"danger","112":"danger","114":"danger","116":"danger","117":"danger","118":"danger","92":"danger","119":"danger","93":"danger","57":"danger","16":"danger","17":"danger","123":"danger","200":"danger","124":"danger","201":"danger","202":"danger","205":"danger","60":"danger","20":"danger","22":"danger","23":"danger","24":"danger","25":"danger","69":"danger","27":"danger","28":"danger","29":"danger","170":"danger","174":"danger","175":"danger","177":"danger","134":"danger","138":"danger","139":"danger","72":"danger","30":"danger","31":"danger","75":"danger","76":"danger","78":"danger","180":"danger","182":"danger","141":"danger","185":"danger","187":"danger","144":"danger","146":"danger","103":"danger","148":"danger","149":"danger","80":"danger","107":"danger","108":"danger","83":"danger","41":"danger","85":"danger","42":"danger","86":"danger","43":"danger","87":"danger"};
 					$.each( lineNumbersBGColorsJSON, function( key, value ) {
 						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
 					});
@@ -34,9 +34,9 @@
 							</th>
 							<th style="width: 300px">
 								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
-									<div class="progress-bar bg-danger" role="progressbar" style="width: 48.0%" aria-valuenow="48.0" aria-valuemin="0" aria-valuemax="100"></div>
-									<div class="progress-bar bg-secondary" role="progressbar" style="width: 52%" aria-valuenow="52" aria-valuemin="0" aria-valuemax="100"></div>
-									<span class="justify-content-center text-light d-flex position-absolute w-100">48.0% coverage</span>
+									<div class="progress-bar bg-danger" role="progressbar" style="width: 0.0%" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100">0.0% coverage</span>
 								</div>
 							</th>
 						</tr>

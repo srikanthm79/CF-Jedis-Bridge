@@ -16,7 +16,7 @@
 			
 			<script>
 				$( document ).ready( function(){
-					var lineNumbersBGColorsJSON = {"11":"danger","12":"danger","13":"danger","25":"danger","15":"danger","16":"danger","17":"danger","28":"danger","18":"danger","19":"danger","1":"danger","3":"danger","4":"danger","5":"danger","6":"danger","7":"danger","8":"danger","9":"danger","10":"danger"};
+					var lineNumbersBGColorsJSON = {};
 					$.each( lineNumbersBGColorsJSON, function( key, value ) {
 						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
 					});
