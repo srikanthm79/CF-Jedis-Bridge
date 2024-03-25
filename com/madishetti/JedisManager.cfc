@@ -95,11 +95,17 @@ component accessors="true" {
         try {
             // Get a Jedis resource from the pool
             jedis = getJedisResource();
+
+            var cacheData = arguments.dataToCache;
+            // Check if the data to cache is a non-simple value
+            if (!isSimpleValue(cacheData)) {
+                cacheData = arguments.dataToCache.toJson();
+            }
             // Use the Jedis resource
             jedis.setex(
                 arguments.cacheKey,
                 arguments.cacheDurationInSeconds,
-                arguments.dataToCache
+                cacheData
             );
         } catch ( "JedisManager.retriveJedis.resource.error" e ) {
             rethrow;
@@ -132,7 +138,12 @@ component accessors="true" {
             // Get a Jedis resource from the pool
             jedis = getJedisResource();
             // Retrieve data from the cache
-            return jedis.get( arguments.cacheKey );
+            var cacheData = jedis.get( arguments.cacheKey );
+            // Check if the data is a non-simple value
+            if(isJson(cacheData)){
+                cacheData = deserializeJson(cacheData);
+            }
+            return cacheData;
         } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
             rethrow;
         } catch ( Exception e ) {
