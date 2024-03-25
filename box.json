@@ -3,21 +3,18 @@
     "bugs":"",
     "changelog":"",
     "contributors":[],
-    "dependencies":{
-        "cbproxies":"^1.1.0+1"
-    },
+    "dependencies":{},
     "description":"",
     "devDependencies":{
         "testbox":"5",
-        "docbox":"4"
+        "docbox":"^4.2.1+3"
     },
     "documentation":"",
     "homepage":"https://github.com/srikanthm79/CF-Jedis-Bridge",
     "ignore":[],
     "installPaths":{
         "testbox":"testbox/",
-        "docbox":"docbox/",
-        "cbproxies":"modules/cbproxies/"
+        "docbox":"docbox/"
     },
     "instructions":"",
     "keywords":"Redis,Jedis,ACF,Cache",
@@ -38,7 +35,9 @@
         "type":"",
         "URL":""
     },
-    "scripts":{},
+    "scripts":{
+        "build-docs":"docbox generate source='.' mappings:com.madishetti='./com/madishetti' excludes='coldbox|testbox|docbox' strategy='HTML' strategy-projectTitle='CF-Jedis-Bridge' strategy-outputDir='docs'"
+    },
     "shortDescription":"A simplistic and straightforward, yet flexible, connector between ACF and Redis",
     "slug":"cf-jedis-bridge",
     "testbox":{
@@ -49,7 +48,11 @@
         "options":{},
         "recurse":true,
         "reporter":"",
-        "runner":"http://127.0.0.1:8200/tests/runner.cfm?directory=tests.specs.unit&recurse=true&verbose=true",
+        "runner":[
+            {
+                "default":""
+            }
+        ],
         "testBundles":"",
         "testSpecs":"",
         "testSuites":"",
@@ -58,5 +61,5 @@
         "watchPaths":"**.cfc"
     },
     "type":"modules",
-    "version":"0.0.1"
+    "version":"1.0.0"
 }
