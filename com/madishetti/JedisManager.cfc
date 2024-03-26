@@ -62,7 +62,7 @@ component accessors="true" {
         } catch ( Exception e ) {
             throw(
                 type    = "com.madishetti.JedisManager.JedisResourceRetrievalException",
-                message = "JedisManager error, retrieving a Jedis resource from the Jedis pool: " & e.message,
+                message = "JedisManager - problem retrieving a Jedis resource from the Jedis pool: " & e.message,
                 detail  = e.detail
             );
         }
@@ -106,7 +106,7 @@ component accessors="true" {
                 if (isObject(cacheData) || !(isStruct(cacheData) || isArray(cacheData) || isQuery(cacheData))) {
                     throw(
                         type = "com.madishetti.JedisManager.CacheInsertTypeException",
-                        message = "Invalid data type for caching. Data to cache must be a struct, array, query or simple value."
+                        message = "Jedis Manager - invalid data type for caching. Data to cache must be a struct, array, query or simple value."
                     );
                 }
                 cacheData = serializeJson(cacheData);
@@ -125,7 +125,7 @@ component accessors="true" {
         } catch ( Exception e ) {
             throw(
                 type    = "com.madishetti.JedisManager.CacheInsertException",
-                message = "JedisManager insert cache error: " & e.message,
+                message = "JedisManager - problem inserting into the cache: " & e.message,
                 detail  = e.detail
             );
         } finally {
@@ -162,7 +162,7 @@ component accessors="true" {
         } catch ( Exception e ) {
             throw(
                 type    = "com.madishetti.JedisManager.CacheGetException",
-                message = "JedisManager get cache error: " & e.message,
+                message = "JedisManager - problem getting an element from the cache: " & e.message,
                 detail  = e.detail
             );
         } finally {
@@ -195,7 +195,7 @@ component accessors="true" {
         } catch ( Exception e ) {
             throw(
                 type    = "com.madishetti.JedisManager.CacheExistsException",
-                message = "JedisManager check cache exists error: " & e.message,
+                message = "JedisManager - problem when checking if an element exists: " & e.message,
                 detail  = e.detail
             );
         } finally {
@@ -233,7 +233,7 @@ component accessors="true" {
         } catch ( Exception e ) {
             throw(
                 type    = "com.madishetti.JedisManager.CacheClearException",
-                message = "JedisManager clear cache error: " & e.message,
+                message = "JedisManager - problem when trying to clear an element from the cache: " & e.message,
                 detail  = e.detail
             );
         } finally {
@@ -265,7 +265,7 @@ component accessors="true" {
         } catch ( any e ) {
             throw(
                 type    = "com.madishetti.JedisManager.SettingsException",
-                message = "JedisManager load settings error: " & e.message,
+                message = "JedisManager - setting couldn't be loaded: " & e.message,
                 detail  = e.detail
             );
         }
