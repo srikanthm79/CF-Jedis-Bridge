@@ -54,14 +54,14 @@ component accessors="true" {
      * Retrieves a Jedis resource from the Jedis pool.
      *
      * @return A Jedis resource from the Jedis pool
-     * @throws com.madishetti.JedisManager.getJedisResource.error
+     * @throws com.madishetti.JedisManager.JedisResourceRetrievalException
      */
     private function getJedisResource() {
         try {
             return application.jedisPool.getResource();
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.retriveJedis.resource.error",
+                type    = "com.madishetti.JedisManager.JedisResourceRetrievalException",
                 message = "JedisManager error, retrieving a Jedis resource from the Jedis pool: " & e.message,
                 detail  = e.detail
             );
@@ -84,8 +84,9 @@ component accessors="true" {
      * @dataToCache The value to cache (any, required)
      * @cacheDurationInSeconds The duration for which the value should be cached, in seconds. Defaults to value set in settings. (numeric, optional)
      *
-     * @throws com.madishetti.JedisManager.cacheInsert.error
-     * @throws com.madishetti.JedisManager.cacheInsert.error.typeMismatchException
+     * @throws com.madishetti.JedisManager.CacheInsertException
+     * @throws com.madishetti.JedisManager.CacheInsertTypeException
+     * @throws com.madishetti.JedisManager.JedisResourceRetrievalException
      */
     public void function cacheInsert(
         required string cacheKey,
@@ -104,7 +105,7 @@ component accessors="true" {
                 // Need isObject check because isStruct will return true for an object
                 if (isObject(cacheData) || !(isStruct(cacheData) || isArray(cacheData) || isQuery(cacheData))) {
                     throw(
-                        type = "com.madishetti.JedisManager.cacheInsert.error.typeMismatchException",
+                        type = "com.madishetti.JedisManager.CacheInsertTypeException",
                         message = "Invalid data type for caching. Data to cache must be a struct, array, query or simple value."
                     );
                 }
@@ -117,13 +118,13 @@ component accessors="true" {
                 arguments.cacheDurationInSeconds,
                 cacheData
             );
-        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.JedisResourceRetrievalException" e ) {
             rethrow;
-        }  catch ( "com.madishetti.JedisManager.cacheInsert.error.typeMismatchException" e ) {
+        }  catch ( "com.madishetti.JedisManager.CacheInsertTypeException" e ) {
             rethrow;
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.cacheInsert.error",
+                type    = "com.madishetti.JedisManager.CacheInsertException",
                 message = "JedisManager insert cache error: " & e.message,
                 detail  = e.detail
             );
@@ -141,8 +142,8 @@ component accessors="true" {
      * @cacheKey The key for which to retrieve the cached value. (string, required)
      *
      * @return The cached value associated with the cache key, or `null` if the key is not found.
-     * @throws com.madishetti.JedisManager.cacheGet.error
-     * @throws com.madishetti.JedisManager.retriveJedis.resource.error
+     * @throws com.madishetti.JedisManager.CacheGetException
+     * @throws com.madishetti.JedisManager.JedisResourceRetrievalException
      */
     public any function cacheGet( required string cacheKey ) {
         var jedis = "";
@@ -156,11 +157,11 @@ component accessors="true" {
                 cacheData = deserializeJson(cacheData);
             }
             return cacheData;
-        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.JedisResourceRetrievalException" e ) {
             rethrow;
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.cacheGet.error",
+                type    = "com.madishetti.JedisManager.CacheGetException",
                 message = "JedisManager get cache error: " & e.message,
                 detail  = e.detail
             );
@@ -178,8 +179,8 @@ component accessors="true" {
      * @cacheKey The key to check for existence in the cache. (string, required)
      *
      * @return `true` if a value exists for the cache key, `false` otherwise.
-     * @throws com.madishetti.JedisManager.retriveJedis.resource.error
-     * @throws com.madishetti.JedisManager.cacheExists.error
+     * @throws com.madishetti.JedisManager.JedisResourceRetrievalException
+     * @throws com.madishetti.JedisManager.CacheExistsException
      */
     public boolean function cacheExists( required string cacheKey ) {
         var jedis = "";
@@ -189,12 +190,12 @@ component accessors="true" {
 
             // Check key exists in the cache
             return jedis.exists( arguments.cacheKey );
-        } catch ( "com.madishetti.JedisManager.retriveJedis.resource.error" e ) {
+        } catch ( "com.madishetti.JedisManager.JedisResourceRetrievalException" e ) {
             rethrow;
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.cacheExists.error",
-                message = "com.madishetti.JedisManager check cache exists error: " & e.message,
+                type    = "com.madishetti.JedisManager.CacheExistsException",
+                message = "JedisManager check cache exists error: " & e.message,
                 detail  = e.detail
             );
         } finally {
@@ -216,7 +217,8 @@ component accessors="true" {
      * @cacheKey The key to remove from the cache. (string, required)
      *
      * @return `1` if the key is found and deleted; otherwise, returns `0`.
-     * @throws com.madishetti.JedisManager.cacheClear.error
+     * @throws com.madishetti.JedisManager.CacheClearException
+     * @throws com.madishetti.JedisManager.JedisResourceRetrievalException
      */
     public numeric function cacheClear( required string cacheKey ) {
         var jedis = "";
@@ -226,9 +228,11 @@ component accessors="true" {
 
             // Delete the key from cache
             return jedis.del( arguments.cacheKey );
+        } catch ( "com.madishetti.JedisManager.JedisResourceRetrievalException" e ) {
+            rethrow;
         } catch ( Exception e ) {
             throw(
-                type    = "com.madishetti.JedisManager.cacheClear.error",
+                type    = "com.madishetti.JedisManager.CacheClearException",
                 message = "JedisManager clear cache error: " & e.message,
                 detail  = e.detail
             );
@@ -245,7 +249,7 @@ component accessors="true" {
      * This function reads the 'JedisSettings.json' file located in the same directory.
      * It deserializes the JSON content and assigns the settings to corresponding variables in the variables scope.
      *
-     * @throws com.madishetti.JedisManager.loadSettings.error
+     * @throws com.madishetti.JedisManager.SettingsException
      */
     private void function loadSettings() {
         try {
@@ -260,7 +264,7 @@ component accessors="true" {
             cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
         } catch ( any e ) {
             throw(
-                type    = "com.madishetti.JedisManager.loadSettings.error",
+                type    = "com.madishetti.JedisManager.SettingsException",
                 message = "JedisManager load settings error: " & e.message,
                 detail  = e.detail
             );
