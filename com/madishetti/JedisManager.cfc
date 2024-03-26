@@ -153,10 +153,10 @@ component accessors="true" {
             // Retrieve data from the cache
             var cacheData = jedis.get( arguments.cacheKey );
             // Check if the cacheData is a json value
-            if(isJson(cacheData)){
-                cacheData = deserializeJson(cacheData);
+            if(!isNull(cacheData) && isJson(cacheData)){
+                return deserializeJson(cacheData);
             }
-            return cacheData;
+            return jedis.get( arguments.cacheKey );
         } catch ( "com.madishetti.JedisManager.JedisResourceRetrievalException" e ) {
             rethrow;
         } catch ( Exception e ) {
