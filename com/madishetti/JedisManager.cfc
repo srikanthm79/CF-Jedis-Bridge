@@ -25,7 +25,7 @@ component accessors="true" {
      *
      * @reset Indicates whether to reset the settings and recreate the connection pool. Defaults to false.
      */
-    function init( boolean reset = false, struct config = {}) {
+    function init( boolean reset = false, struct config = {} ) {
 
         // Check if the jedisPool does not exist in the application scope or if reset is true.
         if ( !structKeyExists( application, "jedisPool" ) || arguments.reset ) {
