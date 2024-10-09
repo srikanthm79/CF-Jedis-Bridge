@@ -35,11 +35,11 @@ or
 // Create and initialise JedisManager.cfc
 jedisManager = createObject("component","JedisManager");
 config = {};
-config['jedisServerName'] = "localhost";
-config['jedisServerPort'] = 6379;
-config['jedisMaxTotalPool'] = 10;
-config['jedisMaxIdlePool'] = 5;
-cacheDurationInSeconds'] = 600;
+config["jedisServerName"] = "localhost";
+config["jedisServerPort"] = 6379;
+config["jedisMaxTotalPool"] = 10;
+config["jedisMaxIdlePool"] = 5;
+config["cacheDurationInSeconds"] = 600;
 
 jedisManager.init(config=config);
 ```
