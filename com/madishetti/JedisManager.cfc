@@ -16,7 +16,7 @@ component accessors="true" {
 
     property name="jedisServerName"        type="string";
     property name="jedisServerPort"        type="numeric";
-    property name="jedisMaxTotalpool"      type="numeric";
+    property name="jedisMaxTotalPool"      type="numeric";
     property name="jedisMaxIdlePool"       type="numeric";
     property name="cacheDurationInSeconds" type="numeric";
 
@@ -25,16 +25,24 @@ component accessors="true" {
      *
      * @reset Indicates whether to reset the settings and recreate the connection pool. Defaults to false.
      */
-    function init( boolean reset = false ) {
+    function init( boolean reset = false, struct config = {}) {
+
         // Check if the jedisPool does not exist in the application scope or if reset is true.
         if ( !structKeyExists( application, "jedisPool" ) || arguments.reset ) {
-            // Load jedis settings
-            loadSettings();
+                        
+            if (!structIsEmpty( arguments.config)) {
+                // set jedis settings from config structre passed in arguments
+                parseConfig( arguments.config );
+
+            } else {
+                // Load jedis settings from json file -default
+                loadSettings();
+            }
             var jedisPoolConfig = createObject(
                 "java",
                 "redis.clients.jedis.JedisPoolConfig"
             ).init();
-            jedisPoolConfig.setMaxTotal( getJedisMaxTotalpool() );
+            jedisPoolConfig.setMaxTotal( getJedisMaxTotalPool() );
             jedisPoolConfig.setMaxIdle( getJedisMaxIdlePool() );
             // Store the Redis connection pool within the application scope.
             lock scope="application" type="exclusive" timeout="5" {
@@ -48,6 +56,7 @@ component accessors="true" {
                 );
             }
         }
+        return this;
     }
 
     /**
@@ -259,7 +268,7 @@ component accessors="true" {
             // Store jedis settings in variables scope
             jedisServerName        = jedisSettings.jedisServerName;
             jedisServerPort        = jedisSettings.jedisServerPort;
-            jedisMaxTotalpool      = jedisSettings.jedisMaxTotalpool;
+            jedisMaxTotalPool      = jedisSettings.jedisMaxTotalPool;
             jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
             cacheDurationInSeconds = jedisSettings.defaultCacheDurationInSeconds;
         } catch ( any e ) {
@@ -271,4 +280,37 @@ component accessors="true" {
         }
     }
 
+      /**
+     * Loads Jedis settings from a argument struct and stores them in the variables scope.
+     * This function parses the 'arguments.config' var passed.
+     * It assigns the settings to corresponding variables in the variables scope.
+     *
+     * @throws com.madishetti.JedisManager.ConfigSettingsException
+     */
+
+    private void function parseConfig(required struct config) {
+        var key="";
+        try {
+            
+            // loop through the config struct and set the values
+            for (key in arguments.config)  {
+
+                if (ListContainsNoCase("jedisServerName,jedisServerPort,jedisMaxTotalPool,jedisMaxIdlePool,cacheDurationInSeconds",key)) {                    
+                    invoke(this,"set#key#",{'#key#'=arguments.config['#key#']});            
+                } else {
+                    throw(
+                        type    = "com.madishetti.JedisManager.ConfigSettingsException",
+                        message = "JedisManager - setting couldn't be loaded.",
+                        detail  =  key & " is missing in passed config structure"
+                    );
+                }   
+            }
+        } catch ( any e ) {
+            throw(
+                type    = "com.madishetti.JedisManager.ConfigSettingsException",
+                message = "JedisManager - setting couldn't be loaded: " & e.message,
+                detail  = e.detail
+            );
+        }
+    }
 }
