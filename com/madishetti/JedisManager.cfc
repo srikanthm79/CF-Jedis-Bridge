@@ -289,23 +289,20 @@ component accessors="true" {
     private void function parseConfig(required struct config) {
         var property="";
         var jedisProperties = getMetadata(this).properties;
-        try {
-            
+        try {      
             // loop through the jedis struct and validate the config structure
-
-                for ( property in jedisProperties ) {
-                    // Check if the property exists in config passed
-                    if ( !structKeyExists( config, property.name ) ) {
-                        throw(
-                            type    = "com.madishetti.JedisManager.ConfigSettingsException",
-                            message = "JedisManager - setting couldn't be loaded.",
-                            detail  =  property.name & " is missing in passed config structure"
-                        );   
-                    } 
-                    invoke( this,"set#property.name#" , { "#property.name#" = arguments.config["#property.name#"] } );            
-                }
+            for ( property in jedisProperties ) {
+                // Check if the property exists in config passed
+                if ( !structKeyExists( config, property.name ) ) {
+                    throw(
+                        type    = "com.madishetti.JedisManager.ConfigSettingsException",
+                        message = "JedisManager - setting couldn't be loaded.",
+                        detail  =  property.name & " is missing in passed config structure"
+                    );   
+                } 
+                invoke( this,"set#property.name#" , { "#property.name#" = arguments.config["#property.name#"] } );            
             }
-            catch ( any e ) {
+        } catch ( any e ) {
             throw(
                 type    = "com.madishetti.JedisManager.ConfigSettingsException",
                 message = "JedisManager - setting couldn't be loaded: " & e.message,
