@@ -278,14 +278,13 @@ component accessors="true" {
         }
     }
 
-      /**
+    /**
      * Loads Jedis settings from a argument struct and stores them in the variables scope.
      * This function parses the 'arguments.config' var passed.
      * It assigns the settings to corresponding variables in the variables scope.
      *
      * @throws com.madishetti.JedisManager.ConfigSettingsException
      */
-
     private void function parseConfig(required struct config) {
         var property="";
         var jedisProperties = getMetadata(this).properties;
