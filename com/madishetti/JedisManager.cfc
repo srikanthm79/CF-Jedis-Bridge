@@ -30,7 +30,7 @@ component accessors="true" {
         // Check if the jedisPool does not exist in the application scope or if reset is true.
         if ( !structKeyExists( application, "jedisPool" ) || arguments.reset ) {
                         
-            if ( !structIsEmpty( arguments.config) ) {
+            if ( !structIsEmpty( arguments.config ) ) {
                 // set jedis settings from config structre passed in arguments
                 parseConfig( arguments.config );
 
