@@ -30,7 +30,7 @@ component accessors="true" {
         // Check if the jedisPool does not exist in the application scope or if reset is true.
         if ( !structKeyExists( application, "jedisPool" ) || arguments.reset ) {
                         
-            if (!structIsEmpty( arguments.config)) {
+            if ( !structIsEmpty( arguments.config) ) {
                 // set jedis settings from config structre passed in arguments
                 parseConfig( arguments.config );
 
@@ -295,9 +295,9 @@ component accessors="true" {
             
             // loop through the jedis struct and validate the config structure
 
-                for (property in jedisProperties) {
+                for ( property in jedisProperties ) {
                     // Check if the property exists in config passed
-                    if (!structKeyExists(config, property.name)) {
+                    if ( !structKeyExists( config, property.name ) ) {
                         throw(
                             type    = "com.madishetti.JedisManager.ConfigSettingsException",
                             message = "JedisManager - setting couldn't be loaded.",
