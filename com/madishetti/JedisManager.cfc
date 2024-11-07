@@ -15,6 +15,7 @@
 component accessors="true" {
 
     property name="jedisServerName"        type="string";
+    property name="redisPassword"          type="string";
     property name="jedisServerPort"        type="numeric";
     property name="jedisMaxTotalPool"      type="numeric";
     property name="jedisMaxIdlePool"       type="numeric";
@@ -44,14 +45,23 @@ component accessors="true" {
             jedisPoolConfig.setMaxIdle( getJedisMaxIdlePool() );
             // Store the Redis connection pool within the application scope.
             lock scope="application" type="exclusive" timeout="5" {
-                application.jedisPool = createObject(
-                    "java",
-                    "redis.clients.jedis.JedisPool"
-                ).init(
-                    jedisPoolConfig,
-                    getJedisServerName(),
-                    getJedisServerPort()
-                );
+                try {
+                    if (len(getRedisPassword())) {
+                        // If password is available (for Redis setups with password-only authentication)
+                        application.jedisPool = createObject("java", "redis.clients.jedis.JedisPool")
+                            .init(jedisPoolConfig, getJedisServerName(), getJedisServerPort(), 5000, getRedisPassword());
+                    } else {
+                        // No authentication required
+                        application.jedisPool = createObject("java", "redis.clients.jedis.JedisPool")
+                            .init(jedisPoolConfig, getJedisServerName(), getJedisServerPort());
+                    }
+                } catch ( Exception e ) {
+                    throw(
+                        type    = "com.madishetti.JedisManager.JedisPoolCreationlException",
+                        message = "JedisManager - problem creating Jedis pool: " & e.message,
+                        detail  = e.detail
+                    );
+                }
             }
         }
         return this;
@@ -265,6 +275,7 @@ component accessors="true" {
 
             // Store jedis settings in variables scope
             jedisServerName        = jedisSettings.jedisServerName;
+            redisPassword          = jedisSettings.redisPassword;
             jedisServerPort        = jedisSettings.jedisServerPort;
             jedisMaxTotalPool      = jedisSettings.jedisMaxTotalPool;
             jedisMaxIdlePool       = jedisSettings.jedisMaxIdlePool;
