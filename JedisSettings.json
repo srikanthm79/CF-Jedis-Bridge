@@ -3,5 +3,6 @@
     "jedisServerPort"  : 6379,
     "jedisMaxTotalpool": 100,
     "jedisMaxIdlePool" : 10,
-    "defaultCacheDurationInSeconds" : 20
+    "defaultCacheDurationInSeconds" : 20,
+    "redisPassword" : ""
 }

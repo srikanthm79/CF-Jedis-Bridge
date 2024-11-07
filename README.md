@@ -11,7 +11,7 @@ If you're developing on this library, run `box install` to install the local dev
 
 ## Step 2: Set Jedis Configuration Values
 
-Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server.
+Ensure that the necessary Jedis configuration values are set in `JedisSettings.json`. This file contains configuration parameters such as host, port, and other relevant settings required for connecting to the Redis server. If authentication is required, specify `redisPassword`; otherwise, leave it blank to connect without authentication.
 
 ## Step 3: Initialize JedisManager.cfc
 
